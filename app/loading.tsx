@@ -8,7 +8,7 @@ const Loading = () => {
         alt="Discord Clone"
         width={100}
         height={100}
-        className="animate-pulse"
+        className="animate-spin"
       />
     </div>
   );
