@@ -57,7 +57,8 @@ model Member {
   serverId String
   server   Server @relation(fields: [serverId], references: [id], onDelete: Cascade)
 
-  messages Message[]
+  messages      Message[]
+  conversations ConversationMember[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -101,12 +102,43 @@ model Message {
   memberId  String
   member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  channelId String
-  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId String?
+  channel   Channel? @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  conversationId String?
+  conversation   Conversation? @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([memberId])
   @@index([channelId])
+  @@index([conversationId])
+}
+
+model Conversation {
+  id        String                @id @default(uuid())
+  name      String
+  isGroup   Boolean               @default(false)
+  members   ConversationMember[]
+  messages  Message[]
+
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+}
+
+model ConversationMember {
+  id             String         @id @default(uuid())
+  conversationId String
+  conversation   Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  memberId       String
+  member         Member         @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@unique([conversationId, memberId])
+  @@index([conversationId])
+  @@index([memberId])
 }
